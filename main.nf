@@ -29,17 +29,18 @@ WorkflowMain.initialise(workflow, params, log)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    NAMED WORKFLOW FOR PIPELINE
+    SUB-WORKFLOW ACCESS POINTS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { GENOMERESOLVEDMETAGENOMICS } from './workflows/genomeresolvedmetagenomics'
+// include { GENOMERESOLVEDMETAGENOMICS } from './workflows/genomeresolvedmetagenomics'
+include { PREPROCESSREADS as PREPROCESSREADS_WF } from './subworkflows/local/preprocessreads'
 
 //
 // WORKFLOW: Run main nf-core/genomeresolvedmetagenomics analysis pipeline
 //
-workflow NFCORE_GENOMERESOLVEDMETAGENOMICS {
-    GENOMERESOLVEDMETAGENOMICS ()
+workflow PREPROCESSREADS {
+    PREPROCESSREADS_WF ()
 }
 
 /*
@@ -53,7 +54,7 @@ workflow NFCORE_GENOMERESOLVEDMETAGENOMICS {
 // See: https://github.com/nf-core/rnaseq/issues/619
 //
 workflow {
-    NFCORE_GENOMERESOLVEDMETAGENOMICS ()
+    PREPROCESSREADS_WF ()
 }
 
 /*
