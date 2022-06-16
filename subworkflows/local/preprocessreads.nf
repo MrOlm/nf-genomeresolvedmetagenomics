@@ -51,6 +51,9 @@ include { MULTIQC                     } from '../../modules/nf-core/modules/mult
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 include { FASTP                       } from '../../modules/nf-core/modules/fastp/main'
 include { BOWTIE2_REMOVAL_ALIGN       } from '../../modules/local/bowtie2_removal_align'
+include { BASICINFO                   } from '../../modules/local/gen_basic_info'
+include { BASICINFO_MERGE             } from '../../modules/local/gen_basic_info'
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,13 +83,13 @@ workflow PREPROCESSREADS {
         INPUT_CHECK.out.reads
     )
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
-
+    ch_ori_reads = INPUT_CHECK.out.reads
 
     //
     // Run fastp
     //
     ch_clipmerge_out = FASTP (
-        INPUT_CHECK.out.reads,
+        ch_ori_reads,
         false,
         []
         )
@@ -105,6 +108,41 @@ workflow PREPROCESSREADS {
         )
         ch_short_reads = BOWTIE2_REMOVAL_ALIGN.out.reads
     }
+
+    //
+    // Gen basic info
+    //
+    BASICINFO (
+        ch_short_reads,
+        INPUT_CHECK.out.reads,
+    )
+
+    //
+    // Merge basic infos
+    //
+    BASICINFO_MERGE (
+        BASICINFO.out.csv.collect()
+    )
+
+
+    // ch_short_reads_all = ch_short_reads.multiMap { it ->
+    //                         meta  : it[0]
+    //                         reads : it[1]
+    //                     }
+    // log.info """\
+    // test2:     ${ch_short_reads_all.meta.collect().view()}
+    // test2:     ${ch_short_reads_all.reads.collect().view()}
+    // """
+
+    // ch_all_final_reads = ch_short_reads.collect()
+    // ch_all_ori_reads = ch_ori_reads.collect()
+
+    // BASICINFO (
+    //     ch_short_reads_all.meta.collect(),
+    //     ch_short_reads_all.reads.collect()
+    // )
+
+    // out_ch = BASICINFO.out.csv
 
     //
     // MODULE: MultiQC
