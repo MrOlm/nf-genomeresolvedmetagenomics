@@ -8,6 +8,7 @@ process BASICINFO_MERGE {
 
     input:
     path basic_info_list
+    val status
 
     output:
     path '*.csv'       , emit: csv
@@ -18,12 +19,12 @@ process BASICINFO_MERGE {
     IFS=' ' read -r -a read_array <<< "${basic_info_list}"
 
     # Write the header
-    cat "\${read_array[0]}" | head -n 1 > basic_info.csv
+    cat "\${read_array[0]}" | head -n 1 > basic_info_${status}.csv
 
     # Loop array
     for i in "\${read_array[@]}"
     do
-        cat "\$i" | tail -n +2 >> basic_info.csv
+        cat "\$i" | tail -n +2 >> basic_info_${status}.csv
     done
     """
 }
@@ -39,7 +40,7 @@ process BASICINFO {
 
     input:
     tuple val(meta), path(final_reads)
-    tuple val(metaO), path(ori_reads)
+    val status
 
     output:
     path '*.csv'       , emit: csv
@@ -48,15 +49,12 @@ process BASICINFO {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     # Write the header
-    echo "sample,read1,read2,reads,bases,RL,ori_reads,ori_bases" > ${meta.id}_basic_info.csv
+    echo "sample,read1,read2,reads,bases,RL" > ${meta.id}_${status}_basic_info.csv
 
     # Calculate reads and bases for the final samples
-    reads_bases=\$(zcat ${final_reads[0]} | awk '{if (NR%4 == 2) tBases += length(\$0); if (NR%4 == 2) tReads += 1} END {printf tReads * 2 "," tBases ","; printf "%.1f", tBases / (tReads * 2) }')
-
-    # Calculate reads and bases for the ori samples
-    reads_bases_ori=\$(zcat ${ori_reads[0]} | awk '{if (NR%4 == 2) tBases += length(\$0); if (NR%4 == 2) tReads += 1} END {printf tReads * 2 "," tBases}')
+    reads_bases=\$(zcat ${final_reads[0]} ${final_reads[1]} | awk '{if (NR%4 == 2) tBases += length(\$0); if (NR%4 == 2) tReads += 1} END {printf tReads "," tBases ","; printf "%.1f", tBases / tReads }')
     
-    echo "${meta.id},${final_reads[0]},${final_reads[1]},\$reads_bases,\$reads_bases_ori" >> ${meta.id}_basic_info.csv
+    echo "${meta.id},${final_reads[0]},${final_reads[1]},\$reads_bases" >> ${meta.id}_${status}_basic_info.csv
     """
 }
 

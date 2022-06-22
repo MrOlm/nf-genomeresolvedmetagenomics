@@ -7,7 +7,7 @@
 def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
 // Validate input parameters
-WorkflowPreprocessreads.initialise(params, log)
+WorkflowProfile.initialise(params, log)
 
 // TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
@@ -35,7 +35,8 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK } from '../../subworkflows/local/input_check'
+include { INPUT_CHECK       } from '../../subworkflows/local/input_check'
+include { PREPARE_GENOME    } from '../../subworkflows/local/prepare_genome'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,15 +47,8 @@ include { INPUT_CHECK } from '../../subworkflows/local/input_check'
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { FASTQC                                    } from '../../modules/nf-core/modules/fastqc/main'
-include { MULTIQC                                   } from '../../modules/nf-core/modules/multiqc/main'
-include { CUSTOM_DUMPSOFTWAREVERSIONS               } from '../../modules/nf-core/modules/custom/dumpsoftwareversions/main'
-include { FASTP                                     } from '../../modules/nf-core/modules/fastp/main'
-include { BOWTIE2_REMOVAL_ALIGN                     } from '../../modules/local/bowtie2_removal_align'
-include { BASICINFO                                 } from '../../modules/local/gen_basic_info'
-include { BASICINFO as BASICINFO_ori                } from '../../modules/local/gen_basic_info'
-include { BASICINFO_MERGE                           } from '../../modules/local/gen_basic_info'
-include { BASICINFO_MERGE as BASICINFO_MERGE_ori    } from '../../modules/local/gen_basic_info'
+include { BOWTIE2_ALIGN     } from '../../modules/nf-core/modules/bowtie2/align/main'
+include { INSTRAIN          } from '../../modules/local/instrain'
 
 
 /*
@@ -64,9 +58,8 @@ include { BASICINFO_MERGE as BASICINFO_MERGE_ori    } from '../../modules/local/
 */
 
 // Info required for completion email and summary
-def multiqc_report = []
 
-workflow PREPROCESSREADS {
+workflow PROFILE {
 
     ch_versions = Channel.empty()
 
@@ -79,61 +72,32 @@ workflow PREPROCESSREADS {
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
-    // MODULE: Run FastQC
+    // SUBWORKFLOW: Prepare bowtie2 index
     //
-    FASTQC (
-        INPUT_CHECK.out.reads
-    )
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
-    ch_ori_reads = INPUT_CHECK.out.reads
+    PREPARE_GENOME ()
 
     //
-    // Run fastp
+    // MODULE: Run Bowtie2
     //
-    ch_clipmerge_out = FASTP (
-        ch_ori_reads,
-        false,
-        []
-        )
-    ch_short_reads = FASTP.out.reads
-    ch_versions = ch_versions.mix(FASTP.out.versions.first())
-
-    //
-    // Remove host reads
-    //
-    ch_host_bowtie2index = Channel
-        .value(file( "${params.human_genome_location}*" ))
-    if (!params.keep_human_reads){
-        BOWTIE2_REMOVAL_ALIGN (
-            ch_short_reads,
-            ch_host_bowtie2index
-        )
-        ch_short_reads = BOWTIE2_REMOVAL_ALIGN.out.reads
-    }
-
-    //
-    // Gen basic info
-    //
-    BASICINFO (
-        ch_short_reads,
-        "final"
-    )
-     BASICINFO_ori (
+    BOWTIE2_ALIGN (
         INPUT_CHECK.out.reads,
-        "ori"
+        PREPARE_GENOME.out.bowtie2_index,
+        false,
+        true
     )
+    ch_versions = ch_versions.mix(BOWTIE2_ALIGN.out.versions)
 
     //
-    // Merge basic infos
+    // MODULE: Run inStrain
     //
-    BASICINFO_MERGE (
-        BASICINFO.out.csv.collect(),
-        "final"
+    INSTRAIN(
+        BOWTIE2_ALIGN.out.bam,
+        PREPARE_GENOME.out.fasta,
+        []
     )
-    BASICINFO_MERGE_ori (
-        BASICINFO_ori.out.csv.collect(),
-        "ori"
-    )
+
+
+
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -143,7 +107,7 @@ workflow PREPROCESSREADS {
 
 workflow.onComplete {
     if (params.email || params.email_on_fail) {
-        NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report)
+        NfcoreTemplate.email(workflow, params, summary_params, projectDir, log)
     }
     NfcoreTemplate.summary(workflow, params, log)
 }
