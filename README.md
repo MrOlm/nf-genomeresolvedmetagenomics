@@ -8,12 +8,14 @@
 
 Unlike nf-core pipelines, this pipeline is structured around `entry` points. This allows you to easily run some, but not other, pipelines. In pracice each `entry` is a sub-workflow. Below is a quick summary of the currently available `entry` points:
 
-**PREPROCESSREADS**
+### PREPROCESSREADS
+
 Takes an input datasheet listing paired reads and runs fastqc to evaluate initial read quality, fastp to trim reads and remove adapters, bowtie2 against the human genome to remove human reads (optional), and a small script at the end to summarize the number of reads and read pairs remaining at the end.
 
 The `--input` parameter must but a .csv file with the columns "sample, "fastq_1", and "fastq_2" (like this - https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/samplesheet/samplesheet_test_illumina_sispa.csv). The locations of the reads can be local, on S3, or on the web
 
-**PROFILE**
+### PROFILE
+
 Takes an input datasheet listing paired reads (you probably want trimmed paired reads, like those you get from **PREPROCESSREADS**!), maps reads to the provides fasta file using bowtie2, and profiles the read mapping using inStrain.
 
 The `--input` parameter has the same rules as above
