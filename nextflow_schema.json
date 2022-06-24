@@ -128,6 +128,14 @@
                     "fa_icon": "fas fa-font",
                     "description": "Path to genes file (made by Prodigal)",
                     "help_text": "Not required; will be given to inStrain if provided"
+                },
+                "instrain_profile_args": {
+                    "type": "string",
+                    "mimetype": "text/plain",
+                    "fa_icon": "fas fa-font",
+                    "description": "Command line arguments to pass to the inStrain profile command",
+                    "help_text": "Not required; will be given to inStrain if provided",
+                    "default": "--database_mode"
                 }
             }
         },
