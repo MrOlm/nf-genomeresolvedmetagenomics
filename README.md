@@ -1,4 +1,4 @@
-# ![nf-core/genomeresolvedmetagenomics](docs/images/nf-core-genomeresolvedmetagenomics_logo_light.png#gh-light-mode-only) ![nf-core/genomeresolvedmetagenomics](docs/images/nf-core-genomeresolvedmetagenomics_logo_dark.png#gh-dark-mode-only)
+# genomeresolvedmetagenomics
 
 ## Introduction
 
