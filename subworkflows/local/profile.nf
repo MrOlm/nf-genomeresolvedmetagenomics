@@ -99,7 +99,7 @@ workflow PROFILE {
 
     ch_genes = []
     if (params.genes_file) {
-        ch_stb = Channel
+        ch_genes = Channel
             .value(file( "${params.genes_file}" ))
     }
 
