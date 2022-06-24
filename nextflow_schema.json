@@ -112,6 +112,22 @@
                     "format": "path",
                     "description": "Path to directory or tar.gz archive for pre-built Bowtie2 index.",
                     "fa_icon": "fas fa-bezier-curve"
+                },
+                "stb_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "fa_icon": "fas fa-font",
+                    "description": "Path to stb (scaffold to bin) file",
+                    "help_text": "Not required; will be given to inStrain if provided"
+                },
+                "genes_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "fa_icon": "fas fa-font",
+                    "description": "Path to genes file (made by Prodigal)",
+                    "help_text": "Not required; will be given to inStrain if provided"
                 }
             }
         },

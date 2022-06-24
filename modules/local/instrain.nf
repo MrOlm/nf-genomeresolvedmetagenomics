@@ -3,7 +3,7 @@ process INSTRAIN {
     label 'process_high'
 
     // MO - UPDATE TO LASTEST inSTRAIN (v1.6.1) WHEN YOU CAN
-    conda (params.enable_conda ? "bioconda::instrain=1.6.0" : null)
+    conda (params.enable_conda ? "bioconda::instrain=1.6.1" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/instrain':
         'quay.io/biocontainers/instrain:1.6.0--pyhdfd78af_0' }"
@@ -12,6 +12,7 @@ process INSTRAIN {
     tuple val(meta), path(bam)
     path genome_fasta
     path genes_fasta
+    path stb_file
 
     output:
     tuple val(meta), path("*.IS"), emit: profile
@@ -23,6 +24,9 @@ process INSTRAIN {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
+    def genes_args = genes_fasta != [] ? "-g ${genes_fasta}": ''
+    def stb_args = stb_file != [] ? "-s ${stb_file}": ''
+
     // TODO nf-core: Where possible, a command MUST be provided to obtain the version number of the software e.g. 1.10
     //               If the software is unable to output a version number on the command-line then it can be manually specified
     //               e.g. https://github.com/nf-core/modules/blob/master/modules/homer/annotatepeaks/main.nf
@@ -38,6 +42,10 @@ process INSTRAIN {
         $bam \\
         $genome_fasta \\
         -o ${meta.id}.IS \\
+        -p $task.cpus \\
+        $genes_args \\
+        $stb_args \\
+        $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
