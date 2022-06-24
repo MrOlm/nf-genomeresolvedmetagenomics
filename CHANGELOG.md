@@ -6,6 +6,7 @@ and this project (kind of) adheres to [Semantic Versioning](https://semver.org/s
 ## v1.0.1 - [6/24/22]
 
 - Add ability to pass command line arguments to PROFILE
+- Add basic teting for the pipeline
 
 ## v1.0.0 - [6/23/22]
 
