@@ -64,20 +64,6 @@
                     "default": "s3://ngi-igenomes/igenomes/Homo_sapiens/UCSC/hg38/Sequence/Bowtie2Index/genome",
                     "fa_icon": "fas fa-folder-open",
                     "hidden": false
-                },
-                "email": {
-                    "type": "string",
-                    "description": "Email address for completion summary.",
-                    "fa_icon": "fas fa-envelope",
-                    "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
-                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
-                    "hidden": true
-                },
-                "multiqc_title": {
-                    "type": "string",
-                    "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
-                    "fa_icon": "fas fa-file-signature",
-                    "hidden": true
                 }
             }
         },
@@ -136,6 +122,37 @@
                     "description": "Command line arguments to pass to the inStrain profile command",
                     "help_text": "Not required; will be given to inStrain if provided",
                     "default": "--database_mode"
+                }
+            }
+        },
+        "assemble_options": {
+            "title": "ASSEMBLE options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Options for the ASSEMBLE workflow",
+            "required": ["input", "outdir"],
+            "properties": {
+                "assemblers": {
+                    "type": "string",
+                    "default": "spades",
+                    "description": "Specify which assembly algorithms you would like to use. Available options are 'spades' and 'megahit'",
+                    "fa_icon": "fas fa-random"
+                },
+                "skip_assembly_completeness": {
+                    "type": "boolean",
+                    "description": "Skip mapping back to the completted assembly",
+                    "fa_icon": "fas fa-remove-format"
+                },
+                "skip_quast": {
+                    "type": "boolean",
+                    "description": "Skip running quast",
+                    "fa_icon": "fas fa-remove-format"
+                },
+                "metaspades_kmer": {
+                    "type": "string",
+                    "default": "21,33,55,77",
+                    "description": "Kmers to pass to metaspades with -k argument",
+                    "fa_icon": "fas fa-random"
                 }
             }
         },

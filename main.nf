@@ -36,6 +36,7 @@ WorkflowMain.initialise(workflow, params, log)
 // include { GENOMERESOLVEDMETAGENOMICS } from './workflows/genomeresolvedmetagenomics'
 include { PREPROCESSREADS as PREPROCESSREADS_WF } from './subworkflows/local/preprocessreads'
 include { PROFILE         as PROFILE_WF }         from './subworkflows/local/profile'
+include { ASSEMBLE        as ASSEMBLE_WF }        from './subworkflows/local/assemble'
 
 //
 // WORKFLOW: Run main nf-core/genomeresolvedmetagenomics analysis pipeline
@@ -46,6 +47,10 @@ workflow PREPROCESSREADS {
 
 workflow PROFILE {
     PROFILE_WF ()
+}
+
+workflow ASSEMBLE {
+    ASSEMBLE_WF ()
 }
 
 /*

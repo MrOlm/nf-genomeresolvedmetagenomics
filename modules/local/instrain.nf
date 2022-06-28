@@ -1,12 +1,14 @@
 process INSTRAIN {
     tag "$meta.id"
     label 'process_high'
+    label 'error_retry'
+    label 'process_long'
 
     // MO - UPDATE TO LASTEST inSTRAIN (v1.6.1) WHEN YOU CAN
     conda (params.enable_conda ? "bioconda::instrain=1.6.1" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/instrain':
-        'quay.io/biocontainers/instrain:1.6.0--pyhdfd78af_0' }"
+        'quay.io/biocontainers/instrain:1.6.1--pyhdfd78af_0' }"
 
     input:
     tuple val(meta), path(bam)
