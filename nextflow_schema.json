@@ -153,6 +153,12 @@
                     "default": "21,33,55,77",
                     "description": "Kmers to pass to metaspades with -k argument",
                     "fa_icon": "fas fa-random"
+                },
+                "min_length": {
+                    "type": "integer",
+                    "default":1000,
+                    "description": "Minimum assembly scaffold length"
+
                 }
             }
         },

@@ -52,9 +52,14 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS               } from '../../modules/nf-cor
 include { MEGAHIT                                   } from '../../modules/nf-core/modules/megahit/main'
 include { SPADES                                    } from '../../modules/nf-core/modules/spades/main'
 include { QUAST                                     } from '../../modules/nf-core/modules/quast/main'
+
+//
+// MODULE: Local
+//
 include { BOWTIE2_ASSEMBLY_BUILD                    } from '../../modules/local/bowtie2_assembly_build'
 include { BOWTIE2_ASSEMBLY_ALIGN                    } from '../../modules/local/bowtie2_assembly_align'
 include { COVERM                                    } from '../../modules/local/coverm'
+include { ASSEMBLY_FILTER_RENAME                    } from '../../modules/local/assembly_filter_rename'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -98,7 +103,7 @@ workflow ASSEMBLE {
 
     // Run Megahit
     ch_assemblies = Channel.empty()
-    if ('metahit' in assemblers) {
+    if ('megahit' in assemblers) {
         MEGAHIT ( ch_short_reads_grouped )
         ch_megahit_assemblies = MEGAHIT.out.contigs
             .map { meta, assembly ->
@@ -135,6 +140,14 @@ workflow ASSEMBLE {
         ch_assemblies = ch_assemblies.mix(ch_spades_assemblies)
         ch_versions = ch_versions.mix(SPADES.out.versions)
     }
+
+    // Rename and filter assemblies
+    ASSEMBLY_FILTER_RENAME (
+        ch_assemblies,
+        params.min_length
+    )
+    ch_assemblies = ASSEMBLY_FILTER_RENAME.out.assemblies
+    ch_versions = ch_versions.mix(ASSEMBLY_FILTER_RENAME.out.versions)
 
     // Calculate assembly completeness
     if (!params.skip_assembly_completeness){

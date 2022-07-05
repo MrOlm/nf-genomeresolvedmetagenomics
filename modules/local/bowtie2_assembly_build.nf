@@ -1,6 +1,7 @@
 // https://github.dev/nf-core/mag
 process BOWTIE2_ASSEMBLY_BUILD {
     tag "${meta.assembler}-${meta.id}"
+    label 'process_medium'
 
     conda (params.enable_conda ? 'bioconda::bowtie2=2.4.2' : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
