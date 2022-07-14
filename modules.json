@@ -3,14 +3,23 @@
     "homePage": "https://github.com/nf-core/genomeresolvedmetagenomics",
     "repos": {
         "nf-core/modules": {
+            "abricate/run": {
+                "git_sha": "f0800157544a82ae222931764483331a81812012"
+            },
             "bowtie2/align": {
                 "git_sha": "cbc47767f7bb4751a9d178395bd66f051401a0c1"
             },
             "bowtie2/build": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
+            "checkm/lineagewf": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
             "custom/dumpsoftwareversions": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "diamond/blastp": {
+                "git_sha": "bd3bfe0817246082525ab93707976676b1fe208b"
             },
             "fastp": {
                 "git_sha": "d0a1cbb703a130c19f6796c3fce24fbe7dfce789"
@@ -18,14 +27,26 @@
             "fastqc": {
                 "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
             },
+            "gtdbtk/classifywf": {
+                "git_sha": "233fa70811a03a4cecb2ece483b5c8396e2cee1d"
+            },
             "gunzip": {
                 "git_sha": "9aadd9a6d3f5964476582319b3a1c54a3e3fe7c9"
             },
             "megahit": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
+            "metabat2/jgisummarizebamcontigdepths": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "metabat2/metabat2": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
             "multiqc": {
                 "git_sha": "e5f8924fabf4c8380f55fb7aee89fd2c268161b1"
+            },
+            "prodigal": {
+                "git_sha": "fcb1dce7b6f1563bdcdb70fdbe235cc2f9fed62e"
             },
             "quast": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"

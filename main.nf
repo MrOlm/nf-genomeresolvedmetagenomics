@@ -37,6 +37,9 @@ WorkflowMain.initialise(workflow, params, log)
 include { PREPROCESSREADS as PREPROCESSREADS_WF } from './subworkflows/local/preprocessreads'
 include { PROFILE         as PROFILE_WF }         from './subworkflows/local/profile'
 include { ASSEMBLE        as ASSEMBLE_WF }        from './subworkflows/local/assemble'
+include { BIN             as BIN_WF }             from './subworkflows/local/bin'
+include { DEREPLICATE     as DEREPLICATE_WF }     from './subworkflows/local/dereplicate'
+include { TEST            as TEST_WF }            from './subworkflows/local/test'
 
 //
 // WORKFLOW: Run main nf-core/genomeresolvedmetagenomics analysis pipeline
@@ -53,6 +56,30 @@ workflow ASSEMBLE {
     ASSEMBLE_WF ()
 }
 
+workflow BIN {
+    BIN_WF ()
+}
+
+workflow DEREPLICATE {
+    DEREPLICATE_WF ()
+}
+
+workflow TEST {
+    TEST_WF ()
+}
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    COMPLETION EMAIL AND SUMMARY
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+workflow.onComplete {
+    if (params.email || params.email_on_fail) {
+        NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report)
+    }
+    NfcoreTemplate.summary(workflow, params, log)
+}
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN ALL WORKFLOWS

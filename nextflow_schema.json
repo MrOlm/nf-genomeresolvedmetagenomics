@@ -148,6 +148,11 @@
                     "description": "Skip running quast",
                     "fa_icon": "fas fa-remove-format"
                 },
+                "coassemble_group": {
+                    "type": "boolean",
+                    "description": "Co-assemble reads from the same group; not functional yet",
+                    "fa_icon": "fas fa-remove-format"
+                },
                 "metaspades_kmer": {
                     "type": "string",
                     "default": "21,33,55,77",
@@ -159,6 +164,77 @@
                     "default":1000,
                     "description": "Minimum assembly scaffold length"
 
+                }
+            }
+        },
+        "bin_options": {
+            "title": "BIN options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Options for the BIN workflow",
+            "required": ["input", "outdir"],
+            "properties": {
+                "skip_crossmap": {
+                    "type": "boolean",
+                    "description": "Perform cross-mapping during binning with metabat2",
+                    "fa_icon": "fas fa-remove-format"
+                },
+                "gtdb": {
+                    "type": "string",
+                    "default": "https://data.gtdb.ecogenomic.org/releases/latest/auxillary_files/gtdbtk_v2_data.tar.gz",
+                    "description": "Location of gtdb database; local:/LAB_DATA/DATABASES/GTDB/r207/gtdbtk_r207_data.tar.gz s3:s3://sonn-highavail/databases/GTDB/gtdbtk_r207_v2_data.tar.gz",
+                    "fa_icon": "fas fa-random"
+                },
+                "checkv_db": {
+                    "type": "string",
+                    "default": "https://portal.nersc.gov/CheckV/checkv-db-v1.2.tar.gz",
+                    "description": "Location of checkV database; local:/LAB_DATA/DATABASES/checkv/checkv-db-v1.2.tar.gz s3:s3://sonn-highavail/databases/checkv/checkv-db-v1.2.tar.gz",
+                    "fa_icon": "fas fa-random"
+                },
+                "trep_diamond": {
+                    "type": "string",
+                    "default": "/LAB_DATA/DATABASES/UniRef100/uniref100.translated.diamond.dmnd",
+                    "description": "Location of tRep diamond database; s3:s3://sonn-highavail/databases/trep/uniref100.translated.diamond.dmnd",
+                    "fa_icon": "fas fa-random"
+                },
+                "trep_ttable": {
+                    "type": "string",
+                    "default": "/LAB_DATA/DATABASES/UniRef100/uniref100.ttable.gz",
+                    "description": "Location of tRep functional translation database; s3:s3://sonn-highavail/databases/trep/uniref100.ttable.gz",
+                    "fa_icon": "fas fa-random"
+                },
+                "run_virsorter": {
+                    "type": "boolean",
+                    "description": "Run VirSorter2",
+                    "fa_icon": "fas fa-remove-format"
+                },
+                "run_virfinder": {
+                    "type": "boolean",
+                    "description": "Run virfinder",
+                    "fa_icon": "fas fa-remove-format"
+                },
+                "skip_gtdb": {
+                    "type": "boolean",
+                    "description": "Don't run GTDB",
+                    "fa_icon": "fas fa-remove-format"
+                },
+                "skip_checkm": {
+                    "type": "boolean",
+                    "description": "Don't run checkM",
+                    "fa_icon": "fas fa-remove-format"
+                },
+                "skip_checkv": {
+                    "type": "boolean",
+                    "description": "Don't run checkV",
+                    "fa_icon": "fas fa-remove-format"
+                },
+                "metabat2_args": {
+                    "type": "string",
+                    "mimetype": "text/plain",
+                    "fa_icon": "fas fa-font",
+                    "description": "Command line arguments to pass to metabat2",
+                    "help_text": "Not required; will be given to inStrain if provided",
+                    "default": ""
                 }
             }
         },

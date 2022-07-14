@@ -1,6 +1,7 @@
 process MEGAHIT {
     tag "$meta.id"
     label 'process_high'
+    label 'process_high_memory'
 
     conda (params.enable_conda ? "bioconda::megahit=1.2.9 conda-forge::pigz=2.6" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -25,11 +26,13 @@ process MEGAHIT {
     def args = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
+    def avail_mem = "${task.memory.toBytes() / 1.1}"
     if (meta.single_end) {
         """
         megahit \\
             -r ${reads} \\
             -t $task.cpus \\
+            -m $avail_mem \\
             $args \\
             --out-prefix $prefix
 
@@ -51,6 +54,7 @@ process MEGAHIT {
             -1 ${reads[0]} \\
             -2 ${reads[1]} \\
             -t $task.cpus \\
+            -m $avail_mem \\
             $args \\
             --out-prefix $prefix
 

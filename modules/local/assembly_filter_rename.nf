@@ -12,7 +12,7 @@ process ASSEMBLY_FILTER_RENAME {
 
     output:
     tuple val(meta), path("${meta.id}_${meta.assembler}.fasta.gz")       , emit: assemblies 
-    path "versions.yml"                   , emit: versions
+    path "versions.yml"                                                  , emit: versions
 
     script: 
     def min_length = min_length ?: '1000'

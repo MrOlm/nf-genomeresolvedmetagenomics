@@ -176,7 +176,6 @@ workflow ASSEMBLE {
     }
 
     // Run QUAST
-    ch_quast_multiqc = Channel.empty()
     if (!params.skip_quast){
         QUAST ( 
             ch_assemblies.collect{ it[1] },
@@ -192,18 +191,6 @@ workflow ASSEMBLE {
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
 
-}
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    COMPLETION EMAIL AND SUMMARY
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-workflow.onComplete {
-    if (params.email || params.email_on_fail) {
-        NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report)
-    }
-    NfcoreTemplate.summary(workflow, params, log)
 }
 
 /*

@@ -1,7 +1,7 @@
 //https://github.dev/nf-core/mag
 process BOWTIE2_ASSEMBLY_ALIGN {
     tag "${assembly_meta.assembler}-${assembly_meta.id}-${reads_meta.id}"
-    label 'process_high'
+    label 'process_medium'
 
     conda (params.enable_conda ? "bioconda::bowtie2=2.4.2 bioconda::samtools=1.11 conda-forge::pigz=2.3.4" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
