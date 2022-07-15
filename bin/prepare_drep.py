@@ -10,6 +10,7 @@ __author__ = "Matt Olm"
 __version__ = "0.1.0"
 __license__ = "MIT"
 
+from dataclasses import dataclass
 import os
 import gzip
 import glob
@@ -37,8 +38,11 @@ def main(args):
         dbs = []
         gf = f"{sname}_bins/"
         set_genomes = []
+        database_genomes = []
         
         for f in folders:
+            database_folder = 'database' in f
+
             # Make the genome info table
             gl = f"{f}{s}/{s}_genomeInfo.csv"
             if not os.path.isfile(gl):
@@ -52,6 +56,10 @@ def main(args):
             for g in genomes:
                 set_genomes.append(g)
                 shutil.copy2(g, gf + os.path.basename(g))
+                if database_folder:
+                    database_genomes.append(os.path.basename(g))
+        database_genomes = set(database_genomes)
+
 
         # Save the genome info table
         gdb = pd.concat(dbs).reset_index(drop=True)
@@ -61,7 +69,9 @@ def main(args):
         assert len(set_genomes) == len(gdb), [len(set_genomes), len(gdb)]
         with open(f"{sname}_extraScore.tsv", 'w') as o:
             for g in set_genomes:
-                o.write(f"{os.path.basename(g)}\t{args.extra_score}\n")
+                bg = os.path.basename(g)
+                if bg not in database_genomes:
+                    o.write(f"{bg}\t{args.extra_score}\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

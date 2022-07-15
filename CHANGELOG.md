@@ -3,7 +3,11 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project (kind of) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.2.0- [UNPUSHED]
+## v1.3.0- [7/15/22]
+
+- Add the "DEREPLICATE" subworkflow
+
+## v1.2.0- [7/12/22]
 
 - Add the "BIN" subworkflow
 

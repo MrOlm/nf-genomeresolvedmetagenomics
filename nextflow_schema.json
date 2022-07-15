@@ -67,64 +67,6 @@
                 }
             }
         },
-        "profile_options": {
-            "title": "PROFILE options",
-            "type": "object",
-            "fa_icon": "fas fa-terminal",
-            "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
-            "properties": {
-                "input": {
-                    "type": "string",
-                    "format": "file-path",
-                    "mimetype": "text/csv",
-                    "pattern": "^\\S+\\.csv$",
-                    "schema": "assets/schema_input.json",
-                    "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/preprocessreads/usage#samplesheet-input).",
-                    "fa_icon": "fas fa-file-csv"
-                },
-                "fasta": {
-                    "type": "string",
-                    "format": "file-path",
-                    "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
-                    "fa_icon": "fas fa-font",
-                    "description": "Path to FASTA genome file",
-                    "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible."
-                },
-                "bowtie2_index": {
-                    "type": "string",
-                    "format": "path",
-                    "description": "Path to directory or tar.gz archive for pre-built Bowtie2 index.",
-                    "fa_icon": "fas fa-bezier-curve"
-                },
-                "stb_file": {
-                    "type": "string",
-                    "format": "file-path",
-                    "mimetype": "text/plain",
-                    "fa_icon": "fas fa-font",
-                    "description": "Path to stb (scaffold to bin) file",
-                    "help_text": "Not required; will be given to inStrain if provided"
-                },
-                "genes_file": {
-                    "type": "string",
-                    "format": "file-path",
-                    "mimetype": "text/plain",
-                    "fa_icon": "fas fa-font",
-                    "description": "Path to genes file (made by Prodigal)",
-                    "help_text": "Not required; will be given to inStrain if provided"
-                },
-                "instrain_profile_args": {
-                    "type": "string",
-                    "mimetype": "text/plain",
-                    "fa_icon": "fas fa-font",
-                    "description": "Command line arguments to pass to the inStrain profile command",
-                    "help_text": "Not required; will be given to inStrain if provided",
-                    "default": "--database_mode"
-                }
-            }
-        },
         "assemble_options": {
             "title": "ASSEMBLE options",
             "type": "object",
@@ -235,6 +177,114 @@
                     "description": "Command line arguments to pass to metabat2",
                     "help_text": "Not required; will be given to inStrain if provided",
                     "default": ""
+                }
+            }
+        },
+        "dereplicate_options": {
+            "title": "DEREPLICATE options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Options for the DEREPLICATE workflow",
+            "required": ["input", "outdir"],
+            "properties": {
+                "scaffold_level_drep": {
+                    "type": "boolean",
+                    "description": "Perform scaffold-level dereplication between the final sets",
+                    "fa_icon": "fas fa-remove-format"
+                },
+                "genome_extention": {
+                    "type": "string",
+                    "default": "fa.gz",
+                    "description": "Genome extention of files in structured dRep folder",
+                    "fa_icon": "fas fa-random"
+                },
+                "nondatabase_extrascore": {
+                    "type": "string",
+                    "default": "20",
+                    "description": "Extra score to give to genomes that are from folders that dont have database in the name",
+                    "fa_icon": "fas fa-random"
+                },
+                "set1_drep": {
+                    "type": "string",
+                    "default": "-l 0 -comp 0 -con 1000",
+                    "description": "Parameters for dereplicating the first set of genomes (bacteria / euks by default)",
+                    "fa_icon": "fas fa-random"
+                },
+                "set2_drep": {
+                    "type": "string",
+                    "default": "-l 0 -comp 0 -con 1000",
+                    "description": "Parameters for dereplicating the 2 set of genomes (phage / plasmids by default)",
+                    "fa_icon": "fas fa-random"
+                },
+                "set3_drep": {
+                    "type": "string",
+                    "default": "-l 0 -comp 0 -con 1000",
+                    "description": "Parameters for dereplicating the 3rd set of genomes (not used by default)",
+                    "fa_icon": "fas fa-random"
+                },
+                "set4_drep": {
+                    "type": "string",
+                    "default": "-l 0 -comp 0 -con 1000",
+                    "description": "Parameters for dereplicating the 4th set of genomes (not used by default)",
+                    "fa_icon": "fas fa-random"
+                }
+            }
+        },
+        "profile_options": {
+            "title": "PROFILE options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Define where the pipeline should find input data and save output data.",
+            "required": ["input", "outdir"],
+            "properties": {
+                "input": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/csv",
+                    "pattern": "^\\S+\\.csv$",
+                    "schema": "assets/schema_input.json",
+                    "description": "Path to comma-separated file containing information about the samples in the experiment.",
+                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/preprocessreads/usage#samplesheet-input).",
+                    "fa_icon": "fas fa-file-csv"
+                },
+                "fasta": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "fa_icon": "fas fa-font",
+                    "description": "Path to FASTA genome file",
+                    "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible."
+                },
+                "bowtie2_index": {
+                    "type": "string",
+                    "format": "path",
+                    "description": "Path to directory or tar.gz archive for pre-built Bowtie2 index.",
+                    "fa_icon": "fas fa-bezier-curve"
+                },
+                "stb_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "fa_icon": "fas fa-font",
+                    "description": "Path to stb (scaffold to bin) file",
+                    "help_text": "Not required; will be given to inStrain if provided"
+                },
+                "genes_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "fa_icon": "fas fa-font",
+                    "description": "Path to genes file (made by Prodigal)",
+                    "help_text": "Not required; will be given to inStrain if provided"
+                },
+                "instrain_profile_args": {
+                    "type": "string",
+                    "mimetype": "text/plain",
+                    "fa_icon": "fas fa-font",
+                    "description": "Command line arguments to pass to the inStrain profile command",
+                    "help_text": "Not required; will be given to inStrain if provided",
+                    "default": "--database_mode"
                 }
             }
         },

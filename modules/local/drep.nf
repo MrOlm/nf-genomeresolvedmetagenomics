@@ -1,30 +1,38 @@
 process DREP {
-    tag "$group"
+    tag "$group.$set"
     label 'process_medium'
+    beforeScript 'ulimit -Ss unlimited'
 
     container "quay.io/biocontainers/drep:3.3.0--pyhdfd78af_0"
 
     input:
-    tuple val(group), path(genomes), path(genome_info), path(extra_score)
+    tuple val(group), val(set), path(genomes), path(genome_info), path(extra_score)
     val(parameters)
+    val(extention)
 
     output:
-    // tuple val(group), path ("${group}/dereplicated_genomes/*"),  emit: genomes
-    // tuple val(group), path ("${group}/data_tables/*"),           emit: tables, optional:true
-    path "versions.yml"                                 ,           emit: versions
+    tuple val(group), path ("${group}.${set}/dereplicated_genomes/*")  ,  emit: genomes
+    tuple val(group), path ("${group}.${set}/data_tables/*")           ,  emit: tables, optional:true
+    path "versions.yml"                                         ,  emit: versions
 
     script:
     def args = task.ext.args ?: ''
+    def extention = extention ?: '.fa.gz'
     """
+    echo "start"
+    
+    # Make a text file of all genomes
+    find -name "*${extention}" -print > genomes.txt
+    genomes=\$(find -name "*${extention}" -print)
+    
     # Figure out if there's just 1 genome
-    genomes=( ${genomes} )
-    if [ \${#genomes[@]} -eq 1 ]
+    if [ \$(cat genomes.txt | wc -l) -eq 1 ]
     then
         echo "only 1 genome"
-        mkdir -p ${group}/dereplicated_genomes/
-        cp $genomes ${group}/dereplicated_genomes/
+        mkdir -p ${group}.${set}/dereplicated_genomes/
+        cp \$genomes ${group}.${set}/dereplicated_genomes/
     else
-        dRep dereplicate ${group} -g ${genomes} --genomeInfo ${genome_info} -extraW ${extra_score} -p $task.cpus ${parameters} ${args}
+        dRep dereplicate ${group}.${set} -g genomes.txt --genomeInfo ${genome_info} -extraW ${extra_score} -p $task.cpus ${parameters} ${args}
     fi
 
     cat <<-END_VERSIONS > versions.yml
@@ -42,17 +50,19 @@ process PREPARE_DREP {
 
     input:
     tuple val(group), path(fasta)
+    val(es)
 
     output:
-    tuple val(group), path ("${group}.set1_bins/*"), path ("${group}.set1_genomeInfo.csv"), path ("${group}.set1_extraScore.tsv"), emit: set1
-    tuple val(group), path ("${group}.set2_bins/*"), path ("${group}.set2_genomeInfo.csv"), path ("${group}.set2_extraScore.tsv"), emit: set2, optional: true
-    tuple val(group), path ("${group}.set3_bins/*"), path ("${group}.set3_genomeInfo.csv"), path ("${group}.set3_extraScore.tsv"), emit: set3, optional: true
-    tuple val(group), path ("${group}.set4_bins/*"), path ("${group}.set4_genomeInfo.csv"), path ("${group}.set4_extraScore.tsv"), emit: set4, optional: true
+    tuple val(group), val('set1'), path ("${group}.set1_bins/*"), path ("${group}.set1_genomeInfo.csv"), path ("${group}.set1_extraScore.tsv"), emit: set1
+    tuple val(group), val('set2'), path ("${group}.set2_bins/*"), path ("${group}.set2_genomeInfo.csv"), path ("${group}.set2_extraScore.tsv"), emit: set2, optional: true
+    tuple val(group), val('set3'), path ("${group}.set3_bins/*"), path ("${group}.set3_genomeInfo.csv"), path ("${group}.set3_extraScore.tsv"), emit: set3, optional: true
+    tuple val(group), val('set4'), path ("${group}.set4_bins/*"), path ("${group}.set4_genomeInfo.csv"), path ("${group}.set4_extraScore.tsv"), emit: set4, optional: true
     path "versions.yml"                                 , emit: versions
 
     script:
+    def es = es ?: '0'
     """
-    prepare_drep.py -f $fasta -o $group
+    prepare_drep.py -f $fasta -o $group -e $es
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
