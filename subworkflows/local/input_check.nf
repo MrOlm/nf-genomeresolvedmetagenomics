@@ -148,3 +148,56 @@ workflow INPUT_CHECK_DREP {
     ch_drep_sf = ch_ass
 }
 
+workflow INPUT_CHECK_INSTRAIN {
+    main:
+    if(hasExtension(params.input, "csv")){
+        // extracts read files from samplesheet CSV and distribute into channels
+        ch_input_rows = Channel
+            .from(file(params.input))
+            .splitCsv(header: true)
+            .map { row ->
+                    if (row.size() == 3) {
+                        def id = row.sample
+                        def IS = row.IS_loc
+                        def group = row.group
+
+                        // Check if given combination is valid
+                        if (!IS) exit 1, "Invalid input samplesheet: assembly can not be empty."
+                        return [ id, IS, group, null ]
+
+                    } else if (row.size() == 4) {
+                        def id = row.sample
+                        def IS = row.IS_loc
+                        def group = row.group
+                        def bam = row.bam_loc
+
+                        // Check if given combination is valid
+                        if (!drep_sf) exit 1, "Invalid input samplesheet: assembly can not be empty."
+                        return [ id, IS, group, bam ]
+                    } else {
+                        exit 1, "Input samplesheet contains row with ${row.size()} column(s). Expects 2 or 3."
+                    }
+                }
+        // make the metamap
+        ch_ass = ch_input_rows
+            .map { id, drep_sf, group ->
+                        def meta = [:]
+                        meta.id           = id
+                        meta.group        = group
+                        return [ meta, drep_sf ]
+            }
+
+    } else {
+        exit 1, "Input samplesheet must be a .csv file"
+    }
+
+    // Ensure sample IDs are unique
+    ch_input_rows
+        .map { id, drep_sf, group -> id }
+        .toList()
+        .map { ids -> if( ids.size() != ids.unique().size() ) {exit 1, "ERROR: input samplesheet contains duplicated sample IDs!" } }
+
+    emit:
+    ch_drep_sf = ch_ass
+}
+

@@ -1,7 +1,7 @@
 process DATABASE_SCAFFDREP {
     tag "$group"
     label 'process_low'
-    beforeScript 'ulimit -Ss unlimited'
+    // NOTE: YOU BROKE THIS WHEN YOU SWITCH FROM INPUTTING A SET OF GENOMES TO INPUTTING A FOLDER; SEE BELOW FOR HOW TO HANDLE
 
     container "quay.io/biocontainers/drep:3.3.0--pyhdfd78af_0"
 
@@ -69,12 +69,11 @@ process DATABASE_SCAFFDREP {
 process DATABASE_CONCAT {
     tag "$group"
     label 'process_low'
-    beforeScript 'ulimit -Ss unlimited'
 
     container "quay.io/biocontainers/drep:3.3.0--pyhdfd78af_0"
 
     input:
-    tuple val(group), path(gs1), path(gs2), path(gs3), path(gs4)
+    tuple val(group), path(gs1, stageAs: 'gs1'), path(gs2, stageAs: 'gs2'), path(gs3, stageAs: 'gs3'), path(gs4, stageAs: 'gs4')
     val(extention)
 
     output:
@@ -86,15 +85,19 @@ process DATABASE_CONCAT {
     def args = task.ext.args ?: ''
     def extention = extention ?: '.fa.gz'
     """
+    mkdir -p gs1
+    mkdir -p gs2
+    mkdir -p gs3
+    mkdir -p gs4
+
     # Make a text file of all genomes
-    find -name "*${extention}" -print > genomes.txt
+    find gs1/ gs2/ gs3/ gs4/ -name "*" -type f > genomes.txt
 
     # Make an .stb file
     parse_stb_2.py -f genomes.txt --reverse -o ${group}.database.stb
 
     # Make an .fasta file
     { xargs cat < genomes.txt ; } > ${group}.database.${extention}
-    # gzip ${group}.database.
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
