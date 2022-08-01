@@ -172,19 +172,19 @@ workflow INPUT_CHECK_INSTRAIN {
                         def bam = row.bam_loc
 
                         // Check if given combination is valid
-                        if (!drep_sf) exit 1, "Invalid input samplesheet: assembly can not be empty."
+                        if (!IS) exit 1, "Invalid input samplesheet: IS_loc can not be empty."
                         return [ id, IS, group, bam ]
                     } else {
-                        exit 1, "Input samplesheet contains row with ${row.size()} column(s). Expects 2 or 3."
+                        exit 1, "Input samplesheet contains row with ${row.size()} column(s). Expects 3 or 4"
                     }
                 }
         // make the metamap
         ch_ass = ch_input_rows
-            .map { id, drep_sf, group ->
+            .map { id, IS, group, bam_loc ->
                         def meta = [:]
                         meta.id           = id
                         meta.group        = group
-                        return [ meta, drep_sf ]
+                        return [ meta, IS, bam_loc ]
             }
 
     } else {
@@ -193,11 +193,11 @@ workflow INPUT_CHECK_INSTRAIN {
 
     // Ensure sample IDs are unique
     ch_input_rows
-        .map { id, drep_sf, group -> id }
+        .map { id, IS, group, bam_loc -> id }
         .toList()
         .map { ids -> if( ids.size() != ids.unique().size() ) {exit 1, "ERROR: input samplesheet contains duplicated sample IDs!" } }
 
     emit:
-    ch_drep_sf = ch_ass
+    ch_IS = ch_ass
 }
 

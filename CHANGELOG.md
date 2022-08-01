@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project (kind of) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.3.2- [8/1/22]
+
+- Add "aux_instrain_compare"
+
 ## v1.3.1- [8/1/22]
 
 - Bugfix the "DEREPLICATE" subworkflow so it actually works with large datasets
