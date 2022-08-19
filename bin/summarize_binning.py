@@ -3,7 +3,11 @@
 """
 Summarize Binning
 
-Last updated 7/12/22
+v2.0 - 8/19/22
+# In this version, phage / plasmid scaffolds in bacterial bins are NOT on their own in the .stb
+
+v1.0 - 7/12/22
+# NOTE: In this version, scaffolds that are phage / plasmid are removed from bacterial bins
 
 (base) mattolm@mac-nugget:/LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Bin$ ~/user_data/Nextflow/nf-core-genomeresolvedmetagenomics/bin/summarize_binning.py -f /LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Assemble/results_v1/assembly/MD_02_MEGAHIT.fasta.gz -s /LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Bin/results_v3/parsestb/MD_02.stb -j /LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Bin/results_v3/metabat2/MD_02.txt.gz -e /LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Bin/results_v3/eukrep/MD_02.eukrep.csv -g /LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Bin/results_v3/gtdbtk/gtdbtk.MD_02*summary.tsv -chm /LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Bin/results_v3/checkm/MD_02.tsv -c /LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Bin/results_v2/checkv/MD_02_results/complete_genomes.tsv -ch /LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Bin/results_v2/checkv/MD_02_quality_summary.tsv -a /LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Bin/results_v2/abricate/MD_02.txt -ts /LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Bin/results_v2/trep/MD_02.trep.tax_fullScaffoldTaxonomy.tsv.gz -tg /LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/Wastewater/Nextflow/Bin/results_v3/trep/MD_02.trep.tax_fullGenomeTaxonomy.tsv.gz -o MD_02
 """
@@ -42,7 +46,8 @@ def main(args):
     # 3) Create everything stb
     for i, row in Edb[Edb["domain"].isin(["Bacteriophage", "Plasmid"])].iterrows():
         scaff = '_'.join(row['genome'].split("_")[1:])
-        stb[scaff] = row['genome'] + '.fa.gz'
+        if scaff not in stb:
+            stb[scaff] = row['genome'] + '.fa.gz'
     with open(f"{args.outbase}.sum.stb", 'w') as o:
         for s, b in stb.items():
             o.write(f"{s}\t{b}\n")
@@ -79,6 +84,7 @@ def make_drep_directory(fasta, stb, Edb, outbase):
         sdb = sdb.rename(columns={'gg':'genome', 'Contamination':'contamination', 'Completeness':'completeness'})
 
         sdb = sdb[['genome', 'contamination', 'completeness']]
+        sdb = sdb.sort_values('completeness', ascending=False).drop_duplicates(subset=['genome'], keep='first')
         sdb.to_csv(os.path.join(s1f, f'{name}_genomeInfo.csv'), index=False)
 
         # 2.2) Create bins
@@ -193,11 +199,14 @@ def everything_report(stb, EukRep_table, phage_plasmid_table, GTDB_table, checkM
     bdb['domain'] = 'Prokaryote'
     
     print("# 3) Load Euk info")
-    edb = pd.read_csv(EukRep_table)
-    edb = edb[edb['p_euk_length'] >= min_euk_p]
-    edb['Bin Id'] = [str(c).split('.fa.gz')[0] for c in edb['bin']]
-    edb['domain'] = 'Eukaryote'
-    edb = edb[['Bin Id', 'domain', 'p_euk_length']].rename(columns={'Bin Id':'genome'})
+    try:
+        edb = pd.read_csv(EukRep_table)
+        edb = edb[edb['p_euk_length'] >= min_euk_p]
+        edb['Bin Id'] = [str(c).split('.fa.gz')[0] for c in edb['bin']]
+        edb['domain'] = 'Eukaryote'
+        edb = edb[['Bin Id', 'domain', 'p_euk_length']].rename(columns={'Bin Id':'genome'})
+    except:
+        edb = pd.DataFrame()
     
     print("# 4) Add taxonomy for big genomes")
     Bdb = pd.concat([bdb, edb])

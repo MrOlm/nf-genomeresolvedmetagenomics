@@ -95,10 +95,12 @@ def calc_p_euk(euk_scaffs, stb, s2l):
         table['euk_length'].append(elen)
     
     edb = pd.DataFrame(table)
-    edb['p_euk_scaffs'] = (edb['euk_scaffolds'] / edb['scaffolds']) * 100
-    edb['p_euk_length'] = (edb['euk_length'] / edb['length']) * 100
+    if len(edb) > 0:
+        edb['p_euk_scaffs'] = (edb['euk_scaffolds'] / edb['scaffolds']) * 100
+        edb['p_euk_length'] = (edb['euk_length'] / edb['length']) * 100
+        edb = edb.sort_values('p_euk_length', ascending=False).reset_index(drop=True)
     
-    return edb.sort_values('p_euk_length', ascending=False).reset_index(drop=True)
+    return edb
                 
 
 def main(args):

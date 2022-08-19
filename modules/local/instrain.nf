@@ -3,6 +3,7 @@ process INSTRAIN {
     label 'process_high'
     label 'error_retry'
     label 'process_long'
+    label 'process_high_memory'
 
     // MO - UPDATE TO LASTEST inSTRAIN (v1.6.1) WHEN YOU CAN
     conda (params.enable_conda ? "bioconda::instrain=1.6.1" : null)

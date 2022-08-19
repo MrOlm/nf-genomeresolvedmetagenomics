@@ -1,12 +1,11 @@
 process DATABASE_SCAFFDREP {
     tag "$group"
     label 'process_low'
-    // NOTE: YOU BROKE THIS WHEN YOU SWITCH FROM INPUTTING A SET OF GENOMES TO INPUTTING A FOLDER; SEE BELOW FOR HOW TO HANDLE
 
     container "quay.io/biocontainers/drep:3.3.0--pyhdfd78af_0"
 
     input:
-    tuple val(group), path(gs1), path(gs2), path(gs3), path(gs4)
+    tuple val(group), path(gs1, stageAs: 'gs1'), path(gs2, stageAs: 'gs2'), path(gs3, stageAs: 'gs3'), path(gs4, stageAs: 'gs4')
     val(extention)
 
     output:
@@ -97,11 +96,15 @@ process DATABASE_CONCAT {
     parse_stb_2.py -f genomes.txt --reverse -o ${group}.database.stb
 
     # Make an .fasta file
-    { xargs cat < genomes.txt ; } > ${group}.database.${extention}
+    { xargs cat < genomes.txt ; } > ${group}.database.tmp.${extention}
+
+    # De-replicate on the scaffold level
+    ScaffoldName_dRep.py -i ${group}.database.tmp.${extention} -o ${group}.database.fa
+    gzip ${group}.database.fa
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        Database concat: 1.0.0
+        Database concat: 2.0.0
     END_VERSIONS
     """
 }
