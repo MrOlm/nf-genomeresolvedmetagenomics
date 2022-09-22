@@ -30,6 +30,11 @@ def main(args):
         for d in glob.glob(f + '*/'):
             sets.append(os.path.basename(d[:-1]))
     sets = set(sets)
+    print(f"Sets detected: {sets}")
+
+    if args.set1_only:
+        sets = set(['set1'])
+
 
     # Make a merged dRep folder for each set
     for s in sets:
@@ -81,6 +86,7 @@ if __name__ == "__main__":
 
     parser.add_argument("-e", "--extra_score"   , action="store",     help='Extra score for genomes', default=0)
 
+    parser.add_argument("--set1_only"          , action="store_true",help='Only make stuff for set 1', default=False)
     # # Optional argument flag which defaults to False
     # parser.add_argument("-f", "--flag", action="store_true", default=False)
 

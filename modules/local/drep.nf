@@ -95,6 +95,7 @@ process PREPARE_DREP {
     input:
     tuple val(group), path(fasta, stageAs: 'fastas/*')
     val(es)
+    val(parameters)
 
     output:
     tuple val(group), val('set1'), path ("${group}.set1_bins/"), path ("${group}.set1_genomeInfo.csv"), path ("${group}.set1_extraScore.tsv"), emit: set1
@@ -106,7 +107,7 @@ process PREPARE_DREP {
     script:
     def es = es ?: '0'
     """
-    prepare_drep.py -f fastas/* -o $group -e $es
+    prepare_drep.py -f fastas/* -o $group -e $es ${parameters}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

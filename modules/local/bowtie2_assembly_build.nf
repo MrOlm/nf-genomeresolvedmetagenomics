@@ -12,14 +12,14 @@ process BOWTIE2_ASSEMBLY_BUILD {
     tuple val(meta), path(assembly)
 
     output:
-    tuple val(meta), path(assembly), path('bt2_index_base*'), emit: assembly_index
+    tuple val(meta), path(assembly), path("bt2_index_${meta.id}*"), emit: assembly_index
     path "versions.yml"                                     , emit: versions
 
     script:
     def args = task.ext.args ?: ''
     """
     mkdir bowtie
-    bowtie2-build --threads $task.cpus $assembly "bt2_index_base"
+    bowtie2-build --threads $task.cpus $assembly "bt2_index_${meta.id}"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -73,7 +73,8 @@ workflow DEREPLICATE {
 
     // Prepare dRep for each group
     PREPARE_DREP ( ch_drep_sf,
-                params.nondatabase_extrascore )
+                params.nondatabase_extrascore,
+                params.prepare_drep_params )
     ch_versions = ch_versions.mix(PREPARE_DREP.out.versions)
 
     // Run dRep for each group

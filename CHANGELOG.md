@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project (kind of) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.4.0- [9/22/22]
+
+- Various bugfixes and small improvements, especially to Summarize_Binning.py
+
 ## v1.3.3- [8/19/22]
 
 - Create Summarize_Binning.py version 2, which keeps phage out of the .stb that are already in bacterial genomes, and reports bins as Euks that are Euks and bacteria 

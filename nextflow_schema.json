@@ -227,6 +227,12 @@
                     "default": "-l 0 -comp 0 -con 1000",
                     "description": "Parameters for dereplicating the 4th set of genomes (not used by default)",
                     "fa_icon": "fas fa-random"
+                },
+                "prepare_drep_params": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Parameters to give to prepare_drep",
+                    "fa_icon": "fas fa-random"
                 }
             }
         },

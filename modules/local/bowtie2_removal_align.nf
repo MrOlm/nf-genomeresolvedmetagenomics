@@ -27,24 +27,30 @@ process BOWTIE2_REMOVAL_ALIGN {
     def save_ids = (args2.contains('--host_removal_save_ids')) ? "Y" : "N"
     if (!meta.single_end){
         """
+        echo "start1"
+        echo "start15"
         bowtie2 -p ${task.cpus} \
                 -x ${index[0].getSimpleName()} \
                 -1 "${reads[0]}" -2 "${reads[1]}" \
                 $args \
                 --un-conc-gz ${prefix}.unmapped_%.fastq.gz \
-                --al-conc-gz ${prefix}.mapped_%.fastq.gz \
-                1> /dev/null \
+                --al-conc-gz ${prefix}.mapped_%.fastq.gz
+                1> junk.sam \
                 2> ${prefix}.bowtie2.log
+        echo "start2"
         if [ ${save_ids} = "Y" ] ; then
             gunzip -c ${prefix}.mapped_1.fastq.gz | awk '{if(NR%4==1) print substr(\$0, 2)}' | LC_ALL=C sort > ${prefix}.mapped_1.read_ids.txt
             gunzip -c ${prefix}.mapped_2.fastq.gz | awk '{if(NR%4==1) print substr(\$0, 2)}' | LC_ALL=C sort > ${prefix}.mapped_2.read_ids.txt
         fi
+        echo "start3"
         rm -f ${prefix}.mapped_*.fastq.gz
 
+        echo "start4"
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
             bowtie2: \$(echo \$(bowtie2 --version 2>&1) | sed 's/^.*bowtie2-align-s version //; s/ .*\$//')
         END_VERSIONS
+        echo "start5"
         """
     } else {
         """

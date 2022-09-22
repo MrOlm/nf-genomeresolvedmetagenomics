@@ -3,6 +3,9 @@
 """
 Summarize Binning
 
+v2.1 - 9/22/22
+# Add option "phage_bac_overlap" and fix a problem I was having with this. NOTE THAT WITH phage_priority it may create empty bacterial bins if they're all phage
+
 v2.0 - 8/19/22
 # In this version, phage / plasmid scaffolds in bacterial bins are NOT on their own in the .stb
 
@@ -13,7 +16,7 @@ v1.0 - 7/12/22
 """
 
 __author__ = "Matt Olm"
-__version__ = "0.1.0"
+__version__ = "2.1.0"
 __license__ = "MIT"
 
 import os
@@ -40,22 +43,41 @@ def main(args):
     stb = load_stb(args.stb)
     Edb = everything_report(
         stb, args.eukrep, PPdb, args.GTDB_table, args.checkm, args.trep_genome)
-    Edb.to_csv(f'{args.outbase}.sum.AllGenomes.csv', index=False)
     assert len(set(Edb['domain']) - set(["Bacteriophage", "Plasmid", "Prokaryote", "Eukaryote"])) == 0
 
+    # Mark duplicate scaffolds
+    g2d = defaultdict(int)
+    for i, row in Edb[Edb["domain"].isin(["Bacteriophage", "Plasmid"])].iterrows():
+        scaff = '_'.join(row['genome'].split("_")[1:])
+        if scaff in stb:
+            g2d[row['genome']] += 1
+            g2d[stb[scaff].replace('.fa.gz', '')] += 1
+    Edb['duplicate_scaffolds'] = Edb['genome'].map(g2d)
+
+    # Save everything table
+    Edb.to_csv(f'{args.outbase}.sum.AllGenomes.csv', index=False)
+    
     # 3) Create everything stb
+    # At this point the .stb has bacteria and euk contigs.
     for i, row in Edb[Edb["domain"].isin(["Bacteriophage", "Plasmid"])].iterrows():
         scaff = '_'.join(row['genome'].split("_")[1:])
         if scaff not in stb:
             stb[scaff] = row['genome'] + '.fa.gz'
+
+        if scaff in stb:
+            if args.phage_bac_overlap == 'bac_priority':
+                continue
+            else:
+                stb[scaff] = row['genome'] + '.fa.gz'
+            
     with open(f"{args.outbase}.sum.stb", 'w') as o:
         for s, b in stb.items():
             o.write(f"{s}\t{b}\n")
 
     # 3) Create structured dRep directory
-    make_drep_directory(args.fasta, stb, Edb, args.outbase)
+    make_drep_directory(args.fasta, stb, Edb, args.outbase, args.phage_bac_overlap)
 
-def make_drep_directory(fasta, stb, Edb, outbase):
+def make_drep_directory(fasta, stb, Edb, outbase, priority):
     """
     Create structured dRep directory for  this sample
     """
@@ -73,20 +95,28 @@ def make_drep_directory(fasta, stb, Edb, outbase):
 
     for domains, name in zip([['Prokaryote', 'Eukaryote'], ['Bacteriophage', 'Plasmid']], ['set1', 'set2']):
 
-        # 2) Create the folder
-        s1f = os.path.join(base_folder, name + '/')
-        os.mkdir(s1f)
-
-        # 2.1) Create the genomeInfo.csv
+        
+        # 2.0) Create the genomeInfo.csv
         sdb = Edb[Edb['domain'].isin(domains)]
+
+        if ((priority == "bac_priority") & (name == 'set2')):
+            sdb = sdb[sdb['duplicate_scaffolds'] == 0]
+        
         sdb['gg'] = [g + '.fa.gz' for g in sdb['genome']]
         del sdb['genome']
         sdb = sdb.rename(columns={'gg':'genome', 'Contamination':'contamination', 'Completeness':'completeness'})
 
         sdb = sdb[['genome', 'contamination', 'completeness']]
         sdb = sdb.sort_values('completeness', ascending=False).drop_duplicates(subset=['genome'], keep='first')
-        sdb.to_csv(os.path.join(s1f, f'{name}_genomeInfo.csv'), index=False)
 
+        # 2.1) Create the folder
+        if len(sdb) == 0:
+            continue
+
+        s1f = os.path.join(base_folder, name + '/')
+        os.mkdir(s1f)
+        sdb.to_csv(os.path.join(s1f, f'{name}_genomeInfo.csv'), index=False)
+        
         # 2.2) Create bins
         sbins = set(sdb['genome'])
         bf = os.path.join(s1f, 'bins/')
@@ -303,7 +333,7 @@ if __name__ == "__main__":
 
     # General input
     parser.add_argument("-f", "--fasta",                    action="store",     help='Location of .fasta file binning was run on')
-    parser.add_argument("-s", "--stb",                      action="store",     help='Location of stb file')
+    parser.add_argument("-s", "--stb",                      action="store",     help='Location of stb file from bacterial binning')
     parser.add_argument("-j", "--jgi_cov",                  action="store",     help="JGI coverage table")
 
     # Euk inputs
@@ -322,7 +352,11 @@ if __name__ == "__main__":
     parser.add_argument("-tg", "--trep_genome",             action="store",     help='Location of tRep genome output')
 
     # Output
-    parser.add_argument("-o", "--outbase",                      action="store",     help='Name of the output basename')
+    parser.add_argument("-o", "--outbase",                  action="store",     help='Name of the output basename')
+
+    # Options
+    parser.add_argument("--phage_bac_overlap",              action="store",     help="How to handle scaffolds that are phage / plasmid AND in bacteria / euk. bac_priority removes the phage scaffold; phage_priority removes the bacterial scaffold (making checkM estimates innacurate)",
+                    choices=["bac_priority", 'phage_priority'],    default='bac_priority')
 
     # Specify output of "--version"
     parser.add_argument(
