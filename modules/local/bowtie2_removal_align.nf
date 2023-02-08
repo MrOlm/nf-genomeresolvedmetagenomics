@@ -5,10 +5,10 @@ process BOWTIE2_REMOVAL_ALIGN {
     tag "$meta.id"
     label "process_high"
 
-    conda (params.enable_conda ? "bioconda::bowtie2=2.4.2" : null)
+    conda (params.enable_conda ? "bioconda::bowtie2=2.4.5" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bowtie2:2.4.2--py38h1c8e9b9_1' :
-        'quay.io/biocontainers/bowtie2:2.4.2--py38h1c8e9b9_1' }"
+        'https://depot.galaxyproject.org/singularity/bowtie2:2.4.5--py37hb24965f_4' :
+        'quay.io/biocontainers/bowtie2:2.4.5--py37hb24965f_4' }"
 
     input:
     tuple val(meta), path(reads)
@@ -28,29 +28,25 @@ process BOWTIE2_REMOVAL_ALIGN {
     if (!meta.single_end){
         """
         echo "start1"
-        echo "start15"
         bowtie2 -p ${task.cpus} \
                 -x ${index[0].getSimpleName()} \
                 -1 "${reads[0]}" -2 "${reads[1]}" \
                 $args \
                 --un-conc-gz ${prefix}.unmapped_%.fastq.gz \
-                --al-conc-gz ${prefix}.mapped_%.fastq.gz
-                1> junk.sam \
+                --al-conc-gz ${prefix}.mapped_%.fastq.gz \
+                1> /dev/null \
                 2> ${prefix}.bowtie2.log
         echo "start2"
         if [ ${save_ids} = "Y" ] ; then
             gunzip -c ${prefix}.mapped_1.fastq.gz | awk '{if(NR%4==1) print substr(\$0, 2)}' | LC_ALL=C sort > ${prefix}.mapped_1.read_ids.txt
             gunzip -c ${prefix}.mapped_2.fastq.gz | awk '{if(NR%4==1) print substr(\$0, 2)}' | LC_ALL=C sort > ${prefix}.mapped_2.read_ids.txt
         fi
-        echo "start3"
         rm -f ${prefix}.mapped_*.fastq.gz
 
-        echo "start4"
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
             bowtie2: \$(echo \$(bowtie2 --version 2>&1) | sed 's/^.*bowtie2-align-s version //; s/ .*\$//')
         END_VERSIONS
-        echo "start5"
         """
     } else {
         """

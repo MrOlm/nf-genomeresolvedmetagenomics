@@ -163,7 +163,7 @@ workflow INPUT_CHECK_INSTRAIN {
 
                         // Check if given combination is valid
                         if (!IS) exit 1, "Invalid input samplesheet: assembly can not be empty."
-                        return [ id, IS, group, null ]
+                        return [ id, IS, group, [] ]
 
                     } else if (row.size() == 4) {
                         def id = row.sample

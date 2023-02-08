@@ -9,7 +9,6 @@ nextflow.enable.dsl = 2
 
 // Set defaults
 params.stb = []
-params.is_compare_args = ""
 if (params.stb){
     stb = file(params.stb)
 }

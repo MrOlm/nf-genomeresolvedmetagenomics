@@ -1,6 +1,7 @@
 process INSTRAINCOMPARE {
     tag "$group"
     label 'process_medium'
+    label 'process_vlong'
 
     // MO - UPDATE TO LASTEST inSTRAIN (v1.6.1) WHEN YOU CAN
     conda (params.enable_conda ? "bioconda::instrain=1.6.1" : null)
@@ -23,9 +24,12 @@ process INSTRAINCOMPARE {
     task.ext.when == null || task.ext.when
 
     script:
+    def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${group}"
     def stb_args = stb_file ? "-s ${stb_file}": ''
     """
+    echo $bam_list
+    
     inStrain \\
         compare \\
         -i $IS_list \\
@@ -33,7 +37,7 @@ process INSTRAINCOMPARE {
         -p $task.cpus \\
         -b $bam_list \\
         $stb_args \\
-        ${params.is_compare_args}
+        $args \\
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

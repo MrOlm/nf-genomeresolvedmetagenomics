@@ -1,7 +1,7 @@
 process INSTRAIN {
     tag "$meta.id"
-    label 'process_high'
-    label 'error_retry'
+    label 'process_medium' 
+    label 'error_ignore'
     label 'process_long'
     label 'process_high_memory'
 
