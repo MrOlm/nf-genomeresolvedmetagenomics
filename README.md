@@ -56,6 +56,8 @@ Access a list of accepted parameters by running:
    nextflow run https://github.com/MrOlm/nf-genomeresolvedmetagenomics --help
    ```
 
+bin documentation- [docs/bin_README.md](docs/bin_README.md)
+
 ## Credits, Contributions, and Support
 
 genomeresolvedmetagenomics was written by Matt Olm
