@@ -49,6 +49,7 @@ include { PREPARE_GENOME    } from '../../subworkflows/local/prepare_genome'
 //
 include { BOWTIE2_ALIGN                 } from '../../modules/nf-core/modules/bowtie2/align/main'
 include { INSTRAIN                      } from '../../modules/local/instrain'
+include { COVERM                        } from '../../modules/local/coverm'
 include { CUSTOM_DUMPSOFTWAREVERSIONS   } from '../../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 
 
@@ -103,13 +104,25 @@ workflow PROFILE {
             .value(file( "${params.genes_file}" ))
     }
 
-    INSTRAIN(
+    if (!params.coverm){
+        INSTRAIN(
         BOWTIE2_ALIGN.out.bam,
         PREPARE_GENOME.out.fasta,
         ch_genes,
         ch_stb
-    )
-    ch_versions = ch_versions.mix(INSTRAIN.out.versions)
+        )
+        ch_versions = ch_versions.mix(INSTRAIN.out.versions)
+    }
+
+    else {
+        COVERM(
+        BOWTIE2_ALIGN.out.bam
+        )
+        ch_versions = ch_versions.mix(COVERM.out.versions)
+    }
+
+
+
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')

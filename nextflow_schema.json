@@ -291,6 +291,11 @@
                     "description": "Command line arguments to pass to the inStrain profile command",
                     "help_text": "Not required; will be given to inStrain if provided",
                     "default": "--database_mode"
+                },
+                "coverm": {
+                    "type": "boolean",
+                    "description": "Run coverm instead of instrain",
+                    "fa_icon": "fas fa-remove-format"
                 }
             }
         },

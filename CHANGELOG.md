@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project (kind of) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.4.2- [2/21/23]
+
+- Add coverm to the Profile command
+
 ## v1.4.1- [2/08/23]
 
 - Update the bowtie2 version for bowtie2_removal_align, which fixed a critical bug
