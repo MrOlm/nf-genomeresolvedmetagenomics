@@ -1,5 +1,4 @@
 process INSTRAIN {
-    resourceLabels project: 'testingTags', owner: 'mattolm', pipeline: 'profile', stage: 'inStrain_profile'
     tag "$meta.id"
     label 'process_medium' 
     label 'error_ignore'
