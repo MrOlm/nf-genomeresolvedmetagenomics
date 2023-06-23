@@ -1,5 +1,4 @@
 process BOWTIE2_ALIGN {
-    resourceLabels project: 'testingTags', owner: 'mattolm', pipeline: 'profile', stage: 'bowtie2_align'
     tag "$meta.id"
     label "process_high"
 
