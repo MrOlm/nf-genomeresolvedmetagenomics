@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project (kind of) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.4.3- [6/23/23]
+
+- Add aux_gtdb_classify.nf
+
 ## v1.4.2- [2/21/23]
 
 - Add coverm to the Profile command

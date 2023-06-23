@@ -1,7 +1,7 @@
 process GTDBTK_CLASSIFYWF {
     tag "${meta.id}"
     label 'process_medium'
-    label 'process_high_memory'
+    // label 'process_high_memory'
 
     // WARN: Version information not provided by tool on CLI. Please update version string below when bumping container versions.
     conda (params.enable_conda ? "bioconda::gtdbtk=2.1.0" : null)
@@ -34,14 +34,17 @@ process GTDBTK_CLASSIFYWF {
     def VERSION = '2.1.0' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     export GTDBTK_DATA_PATH="\${PWD}/database"
-    if [ ${pplacer_scratch} != "" ] ; then
+    if [ "${pplacer_scratch}" != "" ] ; then
         mkdir pplacer_tmp
     fi
 
     mkdir classify
     touch classify/gtdbtk.N5_271_010G1.bac120.summary.tsv
 
-    gzip -d bins/*.gz
+    pattern="bins/*.gz"
+    if compgen -G "\$pattern" >/dev/null; then
+        gzip -d bins/*.gz
+    fi
 
     gtdbtk classify_wf \\
         $args \\

@@ -101,9 +101,9 @@ workflow PREPROCESSREADS {
     //
     // Remove host reads
     //
-    ch_host_bowtie2index = Channel
-        .value(file( "${params.human_genome_location}*" ))
     if (!params.keep_human_reads){
+        ch_host_bowtie2index = Channel
+            .value(file( "${params.human_genome_location}*" ))
         BOWTIE2_REMOVAL_ALIGN (
             ch_short_reads,
             ch_host_bowtie2index
