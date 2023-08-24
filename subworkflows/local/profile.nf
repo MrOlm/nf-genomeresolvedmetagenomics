@@ -116,7 +116,9 @@ workflow PROFILE {
 
     else {
         COVERM(
-        BOWTIE2_ALIGN.out.bam
+        BOWTIE2_ALIGN.out.bam,
+        PREPARE_GENOME.out.fasta,
+        ch_stb
         )
         ch_versions = ch_versions.mix(COVERM.out.versions)
     }

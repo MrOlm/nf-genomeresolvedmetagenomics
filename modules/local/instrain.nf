@@ -1,6 +1,6 @@
 process INSTRAIN {
     tag "$meta.id"
-    label 'process_medium' 
+    label 'process_high' 
     label 'error_ignore'
     label 'process_long'
     label 'process_high_memory'
@@ -40,6 +40,8 @@ process INSTRAIN {
     // TODO nf-core: Please replace the example samtools command below with your module's command
     // TODO nf-core: Please indent the command appropriately (4 spaces!!) to help with readability ;)
     """
+    echo "Allocated resources: memory=${task.memory.toGiga()}GB, cpus=${task.cpus}"
+    
     inStrain \\
         profile \\
         $bam \\

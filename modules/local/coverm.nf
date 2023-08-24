@@ -9,9 +9,11 @@ process COVERM {
 
     input:
     tuple val(meta), path(bam)
+    path genome_fasta
+    path stb_file
 
     output:
-    tuple val(meta), path("${meta.id}.coverm.tsv"), path("${meta.id}.coverm.log") , emit: coverm
+    tuple val(meta), path("${meta.id}.coverm.tsv"), path("${meta.id}.coverm.log"), path("${meta.id}.coverm.parsed.tsv") , emit: coverm
     path "versions.yml"                                                       , emit: versions
 
     when:
@@ -29,6 +31,10 @@ process COVERM {
         $args \\
         -o ${meta.id}.coverm.tsv \\
         2> ${meta.id}.coverm.log
+
+    echo parse_coverm.py -c ${meta.id}.coverm.tsv -f $genome_fasta -s $stb_file -o ${meta.id}.coverm.parsed.tsv
+
+    parse_coverm.py -c ${meta.id}.coverm.tsv -f $genome_fasta -s $stb_file -o ${meta.id}.coverm.parsed.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
