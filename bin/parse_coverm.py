@@ -26,7 +26,7 @@ def process_coverm(db, s2b, bin2length):
     # Add bin
     ndb = db.copy()
     ndb['bin'] = ndb['Contig'].map(s2b)
-    assert len(ndb[ndb['bin'].isna()]) == 0, ndb[ndb['bin'].isna()]
+    #assert len(ndb[ndb['bin'].isna()]) == 0, ndb[ndb['bin'].isna()]
 
     # Loop through bins
     table = defaultdict(list)

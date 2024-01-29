@@ -296,6 +296,11 @@
                     "type": "boolean",
                     "description": "Run coverm instead of instrain",
                     "fa_icon": "fas fa-remove-format"
+                },
+                "save_bam": {
+                    "type": "boolean",
+                    "description": "Save bam files",
+                    "fa_icon": "fas fa-remove-format"
                 }
             }
         },

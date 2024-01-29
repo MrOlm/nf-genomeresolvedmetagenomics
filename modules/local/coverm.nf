@@ -5,7 +5,7 @@ process COVERM {
     conda (params.enable_conda ? "bioconda::coverm=0.6.1" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/instrain':
-        'quay.io/biocontainers/coverm:0.6.1--h1535e20_4' }"
+        'mattolm/epiricial-detection-docker:3.0' }"
 
     input:
     tuple val(meta), path(bam)

@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project (kind of) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.4.5- [1/29/24]
+- Fix coverM parsing
+- Add "save_bam" argumnet
+
 ## v1.4.4- [8/24/23]
 
 - Add coverM parsing
