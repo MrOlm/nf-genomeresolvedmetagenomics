@@ -1,7 +1,9 @@
 process GTDBTK_CLASSIFYWF {
     tag "${meta.id}"
-    label 'process_medium'
+    label 'process_high'
     label 'process_high_memory'
+    label 'process_long'
+    label 'error_ignore'
 
     // WARN: Version information not provided by tool on CLI. Please update version string below when bumping container versions.
     conda (params.enable_conda ? "bioconda::gtdbtk=2.1.0" : null)

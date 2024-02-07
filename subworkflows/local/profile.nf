@@ -90,7 +90,7 @@ workflow PROFILE {
     ch_versions = ch_versions.mix(BOWTIE2_ALIGN.out.versions)
 
     //
-    // MODULE: Run inStrain
+    // MODULE: Run inStrain or coverM
     //
     ch_stb = []
     if (params.stb_file) {
