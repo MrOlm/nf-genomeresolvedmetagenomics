@@ -168,8 +168,9 @@ workflow ASSEMBLE {
         // Run coverM
         COVERM (
             BOWTIE2_ASSEMBLY_ALIGN.out.mappings.map {
-                meta, ass, bam, bai -> [meta, bam]
-            }
+                meta, ass, bam, bai -> [meta, bam]},
+            [],
+            []
         )
         ch_versions = ch_versions.mix(COVERM.out.versions)
 

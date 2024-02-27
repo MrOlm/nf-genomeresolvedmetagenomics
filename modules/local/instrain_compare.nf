@@ -2,6 +2,7 @@ process INSTRAINCOMPARE {
     tag "$group"
     label 'process_medium'
     label 'process_vlong'
+    label 'process_high_memory'
 
     // MO - UPDATE TO LASTEST inSTRAIN (v1.6.1) WHEN YOU CAN
     conda (params.enable_conda ? "bioconda::instrain=1.6.1" : null)
@@ -34,7 +35,7 @@ process INSTRAINCOMPARE {
         compare \\
         -i $IS_list \\
         -o ${prefix}.RC \\
-        -p $task.cpus \\
+        -p 4 \\
         -b $bam_list \\
         $stb_args \\
         $args \\

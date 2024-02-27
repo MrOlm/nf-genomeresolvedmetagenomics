@@ -36,6 +36,7 @@ WorkflowMain.initialise(workflow, params, log)
 // include { GENOMERESOLVEDMETAGENOMICS } from './workflows/genomeresolvedmetagenomics'
 include { PREPROCESSREADS as PREPROCESSREADS_WF } from './subworkflows/local/preprocessreads'
 include { PROFILE         as PROFILE_WF }         from './subworkflows/local/profile'
+include { PROFILEV2       as PROFILEV2_WF }       from './subworkflows/local/profilev2'
 include { ASSEMBLE        as ASSEMBLE_WF }        from './subworkflows/local/assemble'
 include { BIN             as BIN_WF }             from './subworkflows/local/bin'
 include { DEREPLICATE     as DEREPLICATE_WF }     from './subworkflows/local/dereplicate'
@@ -50,6 +51,10 @@ workflow PREPROCESSREADS {
 
 workflow PROFILE {
     PROFILE_WF ()
+}
+
+workflow PROFILEV2 {
+    PROFILEV2_WF ()
 }
 
 workflow ASSEMBLE {

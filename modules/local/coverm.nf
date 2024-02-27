@@ -22,6 +22,7 @@ process COVERM {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
+    def fasta_stb_present = (genome_fasta && !genome_fasta.trim().empty) && (stb_file && !stb_file.trim().empty) ? 1 : 0
 
     """
     coverm contig \\
@@ -32,9 +33,13 @@ process COVERM {
         -o ${meta.id}.coverm.tsv \\
         2> ${meta.id}.coverm.log
 
-    echo parse_coverm.py -c ${meta.id}.coverm.tsv -f $genome_fasta -s $stb_file -o ${meta.id}.coverm.parsed.tsv
-
-    parse_coverm.py -c ${meta.id}.coverm.tsv -f $genome_fasta -s $stb_file -o ${meta.id}.coverm.parsed.tsv
+    if [ "$fasta_stb_present" == "true" ]; then
+        echo parse_coverm.py -c ${meta.id}.coverm.tsv -f $genome_fasta -s $stb_file -o ${meta.id}.coverm.parsed.tsv
+        parse_coverm.py -c ${meta.id}.coverm.tsv -f $genome_fasta -s $stb_file -o ${meta.id}.coverm.parsed.tsv
+    else
+        echo 'Skipping parse_coverm.py due to missing inputs'
+        touch ${meta.id}.coverm.parsed.tsv
+    fi
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

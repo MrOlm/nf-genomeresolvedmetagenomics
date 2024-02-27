@@ -37,25 +37,12 @@ include { INPUT_CHECK_ASS } from '../../subworkflows/local/input_check'
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { CUSTOM_DUMPSOFTWAREVERSIONS               } from '../../modules/nf-core/modules/custom/dumpsoftwareversions/main'
-include { METABAT2_METABAT2                         } from '../../modules/nf-core/modules/metabat2/metabat2/main'
-include { METABAT2_JGISUMMARIZEBAMCONTIGDEPTHS      } from '../../modules/nf-core/modules/metabat2/jgisummarizebamcontigdepths/main'
-include { CHECKM_LINEAGEWF                          } from '../../modules/nf-core/modules/checkm/lineagewf/main'
-include { GTDBTK_CLASSIFYWF                         } from '../../modules/nf-core/modules/gtdbtk/classifywf/main'
-include { ABRICATE_RUN                              } from '../../modules/nf-core/modules/abricate/run/main'
-
-//
-// MODULE: Local
-//
-include { BOWTIE2_ASSEMBLY_BUILD                    } from '../../modules/local/bowtie2_assembly_build'
-include { BOWTIE2_ASSEMBLY_ALIGN                    } from '../../modules/local/bowtie2_assembly_align'
-include { COVERM                                    } from '../../modules/local/coverm'
-include { GTDBTK_DB_PREPARATION                     } from '../../modules/local/gtdbtk_db_preparation'
-include { CHECKVDB_PREPARATION as CHECKV_DB_PREPARATION                     } from '../../modules/local/checkV_db_preparation'
-include { CHECKV                                    } from '../../modules/local/checkV'
-include { VIRSORTER2                                } from '../../modules/local/virsorter2'
-include { VIRSORTER2_DB_PREPARATION                 } from '../../modules/local/virsorter2'
-include { EUKREP                                    } from '../../modules/local/eukrep'
+include { PREPROCESSREADS as PREPROCESSREADS_WF } from '../../subworkflows/local/preprocessreads'
+include { PROFILE         as PROFILE_WF }         from './profile'
+include { PROFILEV2       as PROFILEV2_WF }       from './profilev2'
+include { ASSEMBLE        as ASSEMBLE_WF }        from './assemble'
+include { BIN             as BIN_WF }             from './bin'
+include { DEREPLICATE     as DEREPLICATE_WF }     from './dereplicate'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -64,50 +51,9 @@ include { EUKREP                                    } from '../../modules/local/
 */
 
 workflow TEST {
-
-    ch_versions = Channel.empty()
-
-    //
-    // Read in samplesheet, validate and stage input files
-    //
-    INPUT_CHECK_ASS ()
-    ch_assemblies = INPUT_CHECK_ASS.out.ch_assemblies
-    ch_assemblies_raw = ch_assemblies
-        .map { meta, ass, reads -> [meta, ass] }
-
-    
-
-    // Run virsorter2
-    VIRSORTER2_DB_PREPARATION ()
-    VIRSORTER2 (ch_assemblies_raw, 
-                VIRSORTER2_DB_PREPARATION.out.database)
-    ch_versions = ch_versions.mix(VIRSORTER2.out.versions)
-    
-    // Run checkv
-    // https://github.dev/replikation/What_the_Phage
-    CHECKV_DB_PREPARATION ( params.checkv_db )
-    CHECKV (ch_assemblies_raw, 
-            CHECKV_DB_PREPARATION.out)
-    ch_versions = ch_versions.mix(CHECKV.out.versions)
-    
-
-    CUSTOM_DUMPSOFTWAREVERSIONS (
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
-
-    // // *****************************
-    // // Perform eukaryote binning
-    // // *****************************
-    // EUKREP ( ch_assemblies_raw )
-    // ch_versions = ch_versions.mix(EUKREP.out.versions)
-
-    // // ******************************
-    // // Perform plasmid identification
-    // // ******************************
-    // ABRICATE_RUN ( ch_assemblies_raw )
-    // ch_versions = ch_versions.mix(ABRICATE_RUN.out.versions)
-
-
+    PREPROCESSREADS_WF ()
+    PROFILE_WF ()
+    ASSEMBLE_WF ()
 }
 
 /*
