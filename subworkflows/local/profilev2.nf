@@ -60,9 +60,9 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS   } from '../../modules/nf-core/modules/cu
 
 // Info required for completion email and summary
 
-fasta = file(params.fasta)
-
 workflow PROFILEV2 {
+
+    fasta = file(params.fasta)
 
     ch_versions = Channel.empty()
 

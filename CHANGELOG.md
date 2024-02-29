@@ -3,6 +3,9 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project (kind of) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.5.1- [2/29/24]
+- Fix silly bug with profilev2
+
 ## v1.5.0- [2/27/24]
 - Fix assemble with strobealign
 - Add profilev2
