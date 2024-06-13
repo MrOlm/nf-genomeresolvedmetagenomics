@@ -3,6 +3,7 @@ process INSTRAINCOMPARE {
     label 'process_medium'
     label 'process_vlong'
     label 'process_high_memory'
+    disk '1 TB'
 
     // MO - UPDATE TO LASTEST inSTRAIN (v1.6.1) WHEN YOU CAN
     conda (params.enable_conda ? "bioconda::instrain=1.6.1" : null)
@@ -30,6 +31,8 @@ process INSTRAINCOMPARE {
     def stb_args = stb_file ? "-s ${stb_file}": ''
     """
     echo $bam_list
+
+    pip install instrain --upgrade
     
     inStrain \\
         compare \\

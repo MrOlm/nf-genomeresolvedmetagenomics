@@ -22,7 +22,7 @@ process COVERM {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def fasta_stb_present = (genome_fasta && !genome_fasta.trim().empty) && (stb_file && !stb_file.trim().empty) ? 1 : 0
+    def fasta_stb_present = (genome_fasta && !genome_fasta.toString().trim().empty) && (stb_file && !stb_file.toString().trim().empty) ? 1 : 0
 
     """
     coverm contig \\
